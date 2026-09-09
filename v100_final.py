@@ -64,5 +64,3 @@ if st.button("🎯 SCAN 1M - CORRECT ONLY"):
             st.balloons()
         else:
             st.warning("⏸️ Ippo market sideways Thalaiva! Correct entry illa. Market kudutha than varum - Waiting...")
-
-st.info("✅ Ipo error varathu Thalaiva! Market kudutha mattum entry varum!")
