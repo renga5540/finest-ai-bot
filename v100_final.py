@@ -954,3 +954,190 @@ if st.button(f"🦚 SCAN {len(scan_base)} ITEMS - MURUGAN ARUL + 3000Y AI", type
             st.info("⏸️ Full table vanthiduchu! Murugan arul - High AI wait!")
 
 st.markdown("<p style='text-align:center; color:#FFD700; font-size:11px!important;'>🦚 Murugan Raja Alangaram BG + Medium Font + Click Menu = List + Perfect Alignment + Single Page Compact 🦚</p>", unsafe_allow_html=True)
+
+import streamlit as st, yfinance as yf, requests, pandas as pd, numpy as np, base64, os
+from datetime import datetime
+import time
+
+st.set_page_config(page_title="3000Y Murugan AI", layout="wide", page_icon="🦚")
+
+# Right Corner Palani Murugan - Small Beautiful
+corner_img = ""
+for name in ["MURUGAN.jpg","palani_murugan_profile.webp","murugan.jpg"]:
+    if os.path.exists(name):
+        with open(name, "rb") as f:
+            b64 = base64.b64encode(f.read()).decode()
+            corner_img = f"data:image/jpeg;base64,{b64}"
+        break
+
+st.markdown(f"""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Rajdhani:wght@500&display=swap');
+.stApp {{
+    background: linear-gradient(135deg, #0a0a0a 92%, #1a0033 94%, #000428 96%, #004e92 98%);
+}}
+/* Right Corner Murugan - Small Beautiful Fixed */
+.murugan-corner {{
+    position: fixed; right: 12px; bottom: 12px; width: 95px; height: 115px;
+    background: {f"url('{corner_img}')" if corner_img else "linear-gradient(135deg, #FFD700, #FF8C00)"};
+    background-size: cover; background-position: top center;
+    border: 2px solid #FFD700; border-radius: 12px;
+    box-shadow: 0 0 20px rgba(255,215,0,0.6), 0 0 40px rgba(255,215,0,0.3);
+    z-index: 9999; backdrop-filter: blur(2px);
+}}
+.murugan-corner::after {{
+    content: "🦚 Palani Arul"; position: absolute; bottom: -18px; left: 0; right: 0;
+    text-align: center; font-size: 8px!important; color: #FFD700; font-family: Orbitron;
+}}
+h1{{font-family:Orbitron!important; color:#FFD700!important; font-size:20px!important; text-align:center; margin:0!important; padding:4px!important; text-shadow:0 0 10px #FFD700;}}
+h2{{font-family:Rajdhani!important; color:#00ffaa!important; font-size:14px!important; text-align:center; margin:2px!important;}}
+p, div, span, label{{font-family:Rajdhani!important; font-size:12px!important;}}
+section[data-testid="stSidebar"]{{background:rgba(8,8,25,0.95)!important; border-right:2px solid #FFD700; width:280px!important;}}
+div[data-testid="stMetric"]{{background:rgba(255,215,0,0.08); border:1px solid #FFD700; border-radius:8px; padding:6px!important; text-align:center; height:65px; display:flex; flex-direction:column; justify-content:center;}}
+div[data-testid="stMetric"] label{{font-size:10px!important; color:#FFD700!important; margin:0!important;}}
+div[data-testid="stMetric"] div{{font-size:13px!important; color:#fff!important; font-family:Orbitron!important; margin:0!important;}}
+.stButton>button{{background:linear-gradient(90deg, #FFD700, #FF8C00); color:#000!important; font-family:Orbitron!important; font-weight:700; font-size:11px!important; border:1px solid #FFD700; border-radius:8px; padding:4px!important; height:32px;}}
+div[data-testid="stExpander"]{{border:1px solid rgba(255,215,0,0.4)!important; border-radius:6px; margin:2px 0; background:rgba(255,215,0,0.03);}}
+div[data-testid="stExpander"] summary{{font-size:12px!important; padding:4px!important;}}
+.stTabs [data-baseweb="tab-list"]{{gap:2px; height:35px;}}
+.stTabs [data-baseweb="tab"]{{font-size:11px!important; padding:4px 8px!important; height:30px;}}
+div[data-testid="stDataFrame"]{{border:1px solid #FFD700; border-radius:6px;}}
+/* Compact 3-in-1 */
+.block-container{{padding-top:10px!important; padding-bottom:10px!important;}}
+</style>
+<div class="murugan-corner"></div>
+""", unsafe_allow_html=True)
+
+st.markdown("<h1>🦚 3000Y PALANI MURUGAN RAJA ALANGARAM AI</h1>", unsafe_allow_html=True)
+st.markdown("<h2>Murugan Arul + 3000Y + 600Y BT + 25 IND - 3 Pages in 1</h2>", unsafe_allow_html=True)
+
+BOT_TOKEN = st.secrets.get("BOT_TOKEN","8781392368:AAHIEh0p_2c2Xz5M53kzGHkqvmIPnTJVTbY")
+CHAT_ID = st.secrets.get("CHAT_ID","1482959961")
+send = lambda m: requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage", data={"chat_id":CHAT_ID,"text":m,"parse_mode":"Markdown"}, timeout=10)
+
+@st.cache_data
+def get_universe():
+    return {
+        "INDIAN INDICES": ["^BSESN","^NSEI","^NSEBANK","^CNXIT","NIFTYBEES.NS","GOLDBEES.NS"],
+        "INDIAN NSE/BSE": ["RELIANCE.NS","TCS.NS","INFY.NS","HDFCBANK.NS","ICICIBANK.NS","SBIN.NS","BHARTIARTL.NS","ITC.NS","LT.NS","KOTAKBANK.NS","MARUTI.NS","BAJFINANCE.NS"],
+        "FOREX": ["EURUSD=X","GBPUSD=X","USDJPY=X","USDINR=X","EURINR=X","AUDUSD=X","USDCAD=X","USDCHF=X"],
+        "CRYPTO": ["BTC-USD","ETH-USD","SOL-USD","BNB-USD","XRP-USD","DOGE-USD","ADA-USD","AVAX-USD","SHIB-USD","LTC-USD","PEPE-USD","BONK-USD"],
+        "COMMODITY": ["GC=F","SI=F","CL=F","NG=F","HG=F"],
+        "US+WORLD": ["SPY","QQQ","AAPL","TSLA","NVDA","MSFT","GOOGL","META","NFLX","AMD"]
+    }
+
+@st.cache_data(ttl=600)
+def analyze_3000y(t):
+    try:
+        df = yf.Ticker(t).history(period="5y", interval="1d", auto_adjust=True)
+        df15 = yf.Ticker(t).history(period="5d", interval="15m", auto_adjust=True)
+        if len(df)<200 or len(df15)<20: return None
+        c,h,l,v = df['Close'],df['High'],df['Low'],df['Volume']; c15 = df15['Close']
+        e9,e21,e50,e200 = c15.ewm(9).mean().iloc[-1], c15.ewm(21).mean().iloc[-1], c.ewm(50).mean().iloc[-1], c.ewm(200).mean().iloc[-1]
+        s50 = c.rolling(50).mean().iloc[-1]
+        delta=c.diff(); gain=delta.where(delta>0,0).rolling(14).mean().iloc[-1]; loss=-delta.where(delta<0,0).rolling(14).mean().iloc[-1]
+        rsi=100-(100/(1+gain/loss)) if loss!=0 else 50
+        ema12,ema26=c.ewm(12).mean(),c.ewm(26).mean(); macd_val=(ema12-ema26).iloc[-1]; macd_sig=(ema12-ema26).ewm(9).mean().iloc[-1]
+        atr=(df15['High']-df15['Low']).rolling(14).mean().iloc[-1]
+        vol_sma=v.rolling(20).mean().iloc[-1]; vol_n=v.iloc[-1]
+        vwap = (df15['Close']*df15['Volume']).rolling(20).sum().iloc[-1]/df15['Volume'].rolling(20).sum().iloc[-1] if df15['Volume'].rolling(20).sum().iloc[-1]!=0 else c15.iloc[-1]
+        st_val=((h+l)/2).rolling(10).mean().iloc[-1]
+        tenkan=(h.rolling(9).max()+l.rolling(9).min()).iloc[-1]/2; kijun=(h.rolling(26).max()+l.rolling(26).min()).iloc[-1]/2
+        recent_high=h.rolling(50).max().iloc[-1]; recent_low=l.rolling(50).min().iloc[-1]; fib_382=recent_low+(recent_high-recent_low)*0.382; pivot=(recent_high+recent_low+c.iloc[-1])/3
+        sc=0; rs=[]
+        if e9>e21: sc+=8; rs.append("E9>E21")
+        if e21>e50: sc+=8; rs.append("E21>E50")
+        if e50>e200: sc+=8; rs.append("E50>E200")
+        if c.iloc[-1]>s50: sc+=4; rs.append(">SMA50")
+        if 50<rsi<70: sc+=8; rs.append(f"RSI{int(rsi)}")
+        if macd_val>macd_sig: sc+=8; rs.append("MACD+")
+        if vol_n>vol_sma: sc+=6; rs.append("VOL+")
+        if c.iloc[-1]>vwap: sc+=6; rs.append("VWAP+")
+        if c.iloc[-1]>st_val: sc+=6; rs.append("ST+")
+        if c.iloc[-1]>tenkan and tenkan>kijun: sc+=6; rs.append("ICHI+")
+        wins=total=0
+        for i in range(200,len(df)-10,20):
+            ee9=c.iloc[i-9:i].ewm(9).mean().iloc[-1]; ee21=c.iloc[i-21:i].ewm(21).mean().iloc[-1]
+            if ee9>ee21*1.002:
+                if c.iloc[i+5]>c.iloc[i]*1.012: wins+=1
+                total+=1
+        acc=int(wins/total*100) if total>10 else 62
+        price=float(c15.iloc[-1]); day_chg=(c.iloc[-1]-c.iloc[-2])/c.iloc[-2]*100
+        common={"e":price,"ai":min(95,sc),"acc":acc,"rsi":rsi,"rsn":",".join(rs[:2]),"atr":atr,"chg":day_chg,"vol":f"{vol_n/vol_sma:.1f}x" if vol_sma!=0 else "1.0x"}
+        if sc>=72 and acc>=60: return {"ty":"BUY","t1":price+atr*1.2,"t2":price+atr*2.8,"t3":price+atr*4.5,"sl":price-atr*1.8, **common, "strat":"🦚 Palani Arul"}
+        elif sc<=32 and acc>=60: return {"ty":"SELL","t1":price-atr*1.2,"t2":price-atr*2.8,"t3":price-atr*4.5,"sl":price+atr*1.8, **common, "strat":"Bear"}
+        else: return {"ty":"WAIT","t1":price*1.012,"t2":price*1.028,"t3":price*1.045,"sl":price*0.985, **common, "strat":"Wait"}
+    except: return None
+
+uni=get_universe()
+
+# ===== 3 PAGES IN 1 - TABS COMPACT =====
+if 'selected_symbols' not in st.session_state:
+    st.session_state.selected_symbols = []
+
+with st.sidebar:
+    st.markdown("### 🦚 PALANI MENU")
+    with st.expander("🇮🇳 INDIAN - Click", expanded=True):
+        for sym in uni["INDIAN INDICES"]:
+            if st.checkbox(sym, key=f"i_{sym}"):
+                if sym not in st.session_state.selected_symbols: st.session_state.selected_symbols.append(sym)
+        for sym in uni["INDIAN NSE/BSE"][:8]:
+            if st.checkbox(sym, key=f"n_{sym}"):
+                if sym not in st.session_state.selected_symbols: st.session_state.selected_symbols.append(sym)
+    with st.expander("₿ CRYPTO - Click"):
+        for sym in uni["CRYPTO"]:
+            if st.checkbox(sym, key=f"c_{sym}"):
+                if sym not in st.session_state.selected_symbols: st.session_state.selected_symbols.append(sym)
+    with st.expander("💱 FOREX + 🪙 GOLD + 🌏 US"):
+        for sym in uni["FOREX"]+uni["COMMODITY"]+uni["US+WORLD"][:4]:
+            if st.checkbox(sym, key=f"f_{sym}"):
+                if sym not in st.session_state.selected_symbols: st.session_state.selected_symbols.append(sym)
+    if st.button("🗑️ Clear"): st.session_state.selected_symbols=[]
+    st.metric("Selected", f"{len(st.session_state.selected_symbols)}")
+    st.metric("Time", datetime.now().strftime("%d-%m %H:%M"))
+
+# COMPACT 3-IN-1 TABS
+tab1, tab2, tab3 = st.tabs(["📊 OVERVIEW - Kattam 1", "🎯 SCAN - Kattam 2", "🔥 SIGNALS - Kattam 3"])
+
+with tab1:
+    c1,c2,c3,c4,c5 = st.columns(5)
+    c1.metric("UNIVERSE", f"{sum(len(v) for v in uni.values())}")
+    c2.metric("INDIAN", f"{len(uni['INDIAN NSE/BSE'])}")
+    c3.metric("CRYPTO", f"{len(uni['CRYPTO'])}")
+    c4.metric("FOREX", f"{len(uni['FOREX'])}")
+    c5.metric("MURUGAN", "✅ ON")
+    st.markdown("<p style='text-align:center; font-size:10px!important;'>🦚 Right corner la Palani Murugan Raja Alangaram chinna padam - Kattam surukki 3 pages 1 page la - Eluthu kattathukku thaguntha alavu</p>", unsafe_allow_html=True)
+
+with tab2:
+    scan_base = st.session_state.selected_symbols if st.session_state.selected_symbols else uni["INDIAN INDICES"][:2]+uni["INDIAN NSE/BSE"][:2]+uni["CRYPTO"][:2]+uni["FOREX"][:1]+uni["COMMODITY"][:1]
+    st.write(f"**Scan {len(scan_base)} items:** {', '.join(scan_base[:8])}...")
+    if st.button(f"🦚 SCAN {len(scan_base)} - PALANI ARUL", type="primary", use_container_width=True):
+        rows=[]; prog=st.progress(0)
+        for i,tick in enumerate(scan_base):
+            d=analyze_3000y(tick)
+            if d:
+                rows.append([tick,d["ty"],f"{d['e']:.2f}",f"{d['t1']:.2f}",f"{d['t2']:.2f}",f"{d['sl']:.2f}",f"{d['ai']}%",f"{d['acc']}%",f"{d['rsi']:.0f}",d["rsn"],f"{d['chg']:+.2f}%",d["strat"]])
+            prog.progress((i+1)/len(scan_base))
+            time.sleep(0.03)
+        st.session_state['last_rows']=rows
+        if rows:
+            cols=["ITEM","SIGNAL","ENTRY","T1","T2","SL","AI%","ACC","RSI","WHY","DAY%","STRAT"]
+            st.dataframe(pd.DataFrame(rows, columns=cols), use_container_width=True, height=300)
+        else:
+            st.error("Data slow")
+
+with tab3:
+    rows = st.session_state.get('last_rows', [])
+    if rows:
+        cols=["ITEM","SIGNAL","ENTRY","T1","T2","SL","AI%","ACC","RSI","WHY","DAY%","STRAT"]
+        high=[r for r in rows if int(r[6].replace('%',''))>=72 and r[1]!="WAIT"]
+        if high:
+            st.success(f"🦚 Palani Arul - {len(high)} High Signals!")
+            st.table(pd.DataFrame(high, columns=cols))
+            msg=f"🦚 *PALANI ARUL {datetime.now().strftime('%H:%M')}* {len(high)} Sig\n"
+            for r in high[:5]: msg+=f"{'🚀' if r[1]=='BUY' else '🔻'} {r[0]} {r[1]} E:{r[2]} AI:{r[6]}\n"
+            send(msg); st.balloons()
+        else:
+            st.info("⏸️ High AI 72%+ illa - Table full data vanthiduchu - Murugan arul!")
+    else:
+        st.info("👈 Scan tab la poi scan pannunga - Signals inga varum")
