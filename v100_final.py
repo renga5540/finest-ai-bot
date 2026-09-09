@@ -40,8 +40,8 @@ if st.checkbox("FULL AUTO ON (15 Min)", value=True):
     time.sleep(900)
     st.rerun()
 *Enna pannanum:*
-1. `BOT_TOKEN = "..."` la irukkura text-a delete panni *unga @BotFather kudutha pudhu token-a* anga paste pannunga
-2. Commit pannunga
+1. `BOT_TOKEN = "8781392368:AAHIEh0p_2c2Xz5M53kz6HkqvmIPnTJVTbY"
+2. Commit 
 
 *Itha panna Secrets theva illa! Direct-a Telegram varum!*
 
