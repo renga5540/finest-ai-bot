@@ -18,7 +18,7 @@ if not BOT_TOKEN or not CHAT_ID:
 
 def send_tg(msg):
     try:
-        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        url = f"https://api.telegram.org/bot{8781392368:AAHIEh0p_2c2Xz5M53kz6HkqvmIPnTJVTbY}/sendMessage"
         r = requests.post(url, data={"chat_id": CHAT_ID, "text": msg}, timeout=10)
         return f"OK - {r.status_code}"
     except Exception as e:
