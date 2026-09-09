@@ -1,8 +1,3 @@
-Thalaiva Error thodarum varutha? Seri, *Secrets-a vittudunga, naan vera method tharaen!*
-
-Secrets work aagalana *Code-leye token-a potruvom* - 1 min la Telegram varum!
-
-*GitHub la v100_final.py full-a delete panni itha paste pannunga - Token-a direct-a code-la maathunga:*
 import streamlit as st
 import requests
 from datetime import datetime
@@ -39,10 +34,3 @@ if st.checkbox("FULL AUTO ON (15 Min)", value=True):
     st.success("Message anupiyachu - 15 min la auto varum")
     time.sleep(900)
     st.rerun()
-*Enna pannanum:*
-1. `BOT_TOKEN = "8781392368:AAHIEh0p_2c2Xz5M53kz6HkqvmIPnTJVTbY"
-2. Commit 
-
-*Itha panna Secrets theva illa! Direct-a Telegram varum!*
-
-Token-a code la potteengala? Potta udane *TEST TELEGRAM* button-a click pannunga - enna varuthu nu sollunga!
