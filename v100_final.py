@@ -1507,3 +1507,14 @@ with tab3:
         st.info("👈 Scan tab la scan pannunga - Signals inga varum")
 
 st.caption("🦚 Palani Murugan Raja Alangaram Right Corner 90x110 + 3-in-1 Compact + Font fitted to box + Checkbox Add/Remove sari")
+
+# Itha mattum maathunga - Line 12-22
+/* Right Corner - REAL Palani Murugan Raja Alangaram */
+.murugan-corner {
+    position: fixed; right: 12px; bottom: 12px; width: 92px; height: 112px;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Murugan_by_Kalym_01.jpg/440px-Murugan_by_Kalym_01.jpg');
+    background-size: cover; background-position: top center;
+    border: 2.5px solid #FFD700; border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255,215,0,0.9), 0 0 45px rgba(255,140,0,0.5);
+    z-index: 99999;
+}
