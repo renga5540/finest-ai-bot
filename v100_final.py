@@ -6,7 +6,7 @@ st.set_page_config(page_title="ULTIMATE 10K PRO MAX", layout="wide")
 st.title("🌌 ULTIMATE 10K + 🏛️ 1000Y + 600Y + ADVANCED")
 st.success("✅ TODAY DATA + 25+ ADVANCED INDICATORS + NO MISS")
 
-BOT_TOKEN = st.secrets.get("BOT_TOKEN","8781392368:AAHIEh0p_2c2Xz5M53kzGHkqvmIPnTJVTbY")
+BOT_TOKEN = st.secrets.get("BOT_TOKEN","8781392368:AAH1A5P_2wjt5w9jOEWrSeK-eaGIqB2S7Tg")
 CHAT_ID = st.secrets.get("CHAT_ID","1482959961")
 send = lambda m: requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage", data={"chat_id":CHAT_ID,"text":m,"parse_mode":"Markdown"}, timeout=10)
 
