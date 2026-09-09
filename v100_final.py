@@ -3,7 +3,7 @@ import requests
 from datetime import datetime
 import time
 
-BOT_TOKEN = "8781392368:AAHIEh0p_2c2Xz5M53kz6HkqvmIPnTJVTbY"
+BOT_TOKEN = "8781392368:AAHyG5Qntma_t7QhQOTyVuDSTQmxA1M7fh4"
 CHAT_ID = "1482959961"
 
 st.set_page_config(page_title="FINEST AI v106 DIRECT", layout="wide")
