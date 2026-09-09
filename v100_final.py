@@ -5,12 +5,12 @@ import requests
 import time
 from datetime import datetime
 
-BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"
+BOT_TOKEN = "8781392368:AAHIEh0p_2c2Xz5M53kz6HkqvmIPnTJVTbY"
 CHAT_ID = "1482959961"
 
 def send_telegram(msg):
     if "YOUR_BOT" in BOT_TOKEN: return
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{8781392368:AAHIEh0p_2c2Xz5M53kz6HkqvmIPnTJVTbY}/sendMessage"
     try:
         requests.post(url, data={"chat_id": CHAT_ID, "text": msg}, timeout=15)
     except: pass
