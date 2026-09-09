@@ -1,41 +1,50 @@
+Thalaiva Error thodarum varutha? Seri, *Secrets-a vittudunga, naan vera method tharaen!*
+
+Secrets work aagalana *Code-leye token-a potruvom* - 1 min la Telegram varum!
+
+*GitHub la v100_final.py full-a delete panni itha paste pannunga - Token-a direct-a code-la maathunga:*
 import streamlit as st
 import requests
 from datetime import datetime
 import time
 
-st.set_page_config(page_title="FINEST AI v105 FIXED", layout="wide")
-st.title("👑 FINEST AI v105 - NO MORE ERROR")
+# --- INGA UNGA TOKEN-A MAATHUNGA ---
+BOT_TOKEN = "8781392368:AAHIEh0p_2c2Xz5M53kz6HkqvmIPnTJVTbY"
+CHAT_ID = "1482959961"
+# ------------------------------------
 
-# SAFE SECRET CHECK - KeyError varaathu
-BOT_TOKEN = st.secrets.get("8781392368:AAHIEh0p_2c2Xz5M53kz6HkqvmIPnTJVTbY", "")
-CHAT_ID = st.secrets.get("1482959961", "")
-
-if not BOT_TOKEN or not CHAT_ID:
-    st.error("❌ SECRETS ILLA! Keela step follow pannunga")
-    st.code('BOT_TOKEN = "123456:AA..."\nCHAT_ID = "1482959961"', language="toml")
-    st.info("Manage app -> Settings -> Secrets la itha paste pannunga")
-    st.stop()
+st.set_page_config(page_title="FINEST AI v106 DIRECT", layout="wide")
+st.title("👑 FINEST AI v106 - DIRECT FIX")
 
 def send_tg(msg):
     try:
-        url = f"https://api.telegram.org/bot{8781392368:AAHIEh0p_2c2Xz5M53kz6HkqvmIPnTJVTbY}/sendMessage"
-        r = requests.post(url, data={"chat_id": CHAT_ID, "text": msg}, timeout=10)
-        return f"OK - {r.status_code}"
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        r = requests.post(url, data={"chat_id": CHAT_ID, "text": msg}, timeout=15)
+        st.write("Telegram Status:", r.status_code, r.text)
+        return r.ok
     except Exception as e:
-        return str(e)
+        st.error(f"Error: {e}")
+        return False
 
-st.success(f"✅ Secrets OK! Chat ID: {CHAT_ID}")
-st.write("Time:", datetime.now().strftime("%d/%m %H:%M:%S"))
+st.write("Time:", datetime.now().strftime("%H:%M:%S"))
 
-if st.button("✅ TEST TELEGRAM NOW"):
-    res = send_tg(f"✅ v105 FIXED SUCCESS! Time: {datetime.now().strftime('%H:%M:%S')}")
-    st.write(res)
-    st.success("Telegram pochu - Check pannunga!")
+if st.button("🚀 TEST TELEGRAM NOW - CLICK ME"):
+    ok = send_tg(f"✅ v106 SUCCESS! BOT WORKING! Time {datetime.now().strftime('%H:%M:%S')}")
+    if ok:
+        st.success("✅ Telegram Ponathu! Phone check pannunga!")
+    else:
+        st.error("Token thappu! BotFather la pudhu token edunga")
 
-# AUTO
-auto = st.toggle("FULL AUTO ON (15 Min)", value=True)
-if auto:
-    send_tg(f"🚀 LIVE - GOLD Entry 4392 T1 4398 T2 4404 T3 4410 SL 4382 - {datetime.now().strftime('%H:%M:%S')}")
-    st.success("Message Anupiyachu!")
+# Auto
+if st.checkbox("FULL AUTO ON (15 Min)", value=True):
+    send_tg(f"🚀 LIVE GOLD BUY 4392 T1 4398 T2 4404 T3 4410 SL 4382 | {datetime.now().strftime('%H:%M')}")
+    st.success("Message anupiyachu - 15 min la auto varum")
     time.sleep(900)
     st.rerun()
+*Enna pannanum:*
+1. `BOT_TOKEN = "..."` la irukkura text-a delete panni *unga @BotFather kudutha pudhu token-a* anga paste pannunga
+2. Commit pannunga
+
+*Itha panna Secrets theva illa! Direct-a Telegram varum!*
+
+Token-a code la potteengala? Potta udane *TEST TELEGRAM* button-a click pannunga - enna varuthu nu sollunga!
