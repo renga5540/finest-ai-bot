@@ -1,65 +1,38 @@
 import streamlit as st
 import requests
-import yfinance as yf
-import time
 from datetime import datetime
+import time
 
-# --- SECURE TOKEN ---
-try:
-    BOT_TOKEN = st.secrets["BOT_TOKEN"]
-    CHAT_ID = st.secrets["CHAT_ID"]
-except:
-    BOT_TOKEN = ""
-    CHAT_ID = "1482959961"
+# --- INGA UNGA TOKEN-A MAATHUNGA ---
+BOT_TOKEN = "8000000000:AAH_unga_BotFather_token_inga_paste_pannunga"
+CHAT_ID = "1482959961"
+# ------------------------------------
 
-def send_telegram(msg):
-    if not BOT_TOKEN or len(BOT_TOKEN) < 20:
-        return False
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+st.set_page_config(page_title="FINEST AI v106 DIRECT", layout="wide")
+st.title("👑 FINEST AI v106 - DIRECT FIX")
+
+def send_tg(msg):
     try:
-        requests.post(url, data={"chat_id": CHAT_ID, "text": msg}, timeout=15)
-        return True
-    except:
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        r = requests.post(url, data={"chat_id": CHAT_ID, "text": msg}, timeout=15)
+        st.write("Telegram Status:", r.status_code, r.text)
+        return r.ok
+    except Exception as e:
+        st.error(f"Error: {e}")
         return False
 
-st.set_page_config(page_title="FINEST AI v103 ALL MARKET", layout="wide")
-st.title("👑 FINEST AI v103 - ALL MARKET LIVE")
-st.success("✅ PAZHAYA MARKET DELETE - PUDHU FULL LIST ONLY!")
+st.write("Time:", datetime.now().strftime("%H:%M:%S"))
 
-# --- 🔥 THALAIVA FULL ALL-MARKET LIST (ONLY THIS) ---
-STOCKS = [
-    # INDIAN TOP 20
-    "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS", "ICICIBANK.NS",
-    "SBIN.NS", "BHARTIARTL.NS", "ITC.NS", "LT.NS", "KOTAKBANK.NS",
-    "TATAMOTORS.NS", "BAJFINANCE.NS", "TATASTEEL.NS", "WIPRO.NS", "ADANIENT.NS",
-    "ASIANPAINT.NS", "MARUTI.NS", "TITAN.NS", "SUNPHARMA.NS", "ULTRACEMCO.NS",
-    # US TOP 7
-    "AAPL", "TSLA", "NVDA", "MSFT", "GOOGL", "AMZN", "META",
-    # CRYPTO 6
-    "BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD", "DOGE-USD",
-    # GOLD, SILVER, CRUDE, GAS, COPPER
-    "GC=F", "SI=F", "CL=F", "NG=F", "HG=F",
-    # FOREX & INDICES
-    "USDINR=X", "^NSEI", "^NSEBANK", "^GSPC"
-]
+if st.button("🚀 TEST TELEGRAM NOW - CLICK ME"):
+    ok = send_tg(f"✅ v106 SUCCESS! BOT WORKING! Time {datetime.now().strftime('%H:%M:%S')}")
+    if ok:
+        st.success("✅ Telegram Ponathu! Phone check pannunga!")
+    else:
+        st.error("Token thappu! BotFather la pudhu token edunga")
 
-st.write(f"📊 TOTAL SCANNING: {len(STOCKS)} MARKETS")
-st.write("INDIAN + US + CRYPTO + GOLD + CRUDE OIL + FOREX")
-
-# --- SCANNING LOGIC ---
-minutes = st.slider("Minutes", 1, 60, 15)
-auto_on = st.toggle("FULL AUTO ON")
-
-if auto_on:
-    st.success(f"AUTO RUNNING... {minutes} min | {len(STOCKS)} Markets")
-    for stock in STOCKS:
-        try:
-            data = yf.download(stock, period="1d", interval="15m", progress=False)
-            if not data.empty:
-                last_price = float(data['Close'].iloc[-1])
-                st.write(f"{stock}: {last_price}")
-                # Inga unga BUY/SELL logic varum
-        except:
-            continue
-    time.sleep(minutes*60)
+# Auto
+if st.checkbox("FULL AUTO ON (15 Min)", value=True):
+    send_tg(f"🚀 LIVE GOLD BUY 4392 T1 4398 T2 4404 T3 4410 SL 4382 | {datetime.now().strftime('%H:%M')}")
+    st.success("Message anupiyachu - 15 min la auto varum")
+    time.sleep(900)
     st.rerun()
