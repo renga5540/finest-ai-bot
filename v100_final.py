@@ -1,4 +1,4 @@
-// @version=6
+// @version=5
 indicator("Anna OS V11 - ADVANCED SOFTWARE 2026", overlay=true, max_lines_count=500, max_labels_count=500, max_boxes_count=500)
 
 // === INPUTS ===
