@@ -55,3 +55,21 @@ if st.checkbox("♾️ INFINITE AUTO - 1B ROTATION", value=True):
 
 st.warning("Thalaiva! 1 Billion mudinjiduchu! Ini marketey illa! Naan kudutha 6 gift features on panniten! Ipo neenga vera level!")
 st.info("⚠️ SECURITY: Unga BOT_TOKEN GitHub la public-a irukku Thalaiva! Yaar venalum 1B bot-a control panniduvanga! @BotFather la /revoke panni pudhu token-a Streamlit Secrets la mattum podunga!")
+
+import streamlit as st, yfinance as yf, requests
+from datetime import datetime
+
+BOT_TOKEN = st.secrets["BOT_TOKEN"]
+CHAT_ID = st.secrets["CHAT_ID"]
+
+st.title("👑 FINEST AI - FINAL STABLE")
+
+def send_tg(msg):
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+
+if st.button("🚀 SEND 1 TEST SIGNAL"):
+    send_tg(f"✅ BOT WORKING! GOLD BUY 4392 | {datetime.now().strftime('%H:%M')}")
+    st.success("Telegram vanthucha check pannunga!")
+
+st.write("Ithu than final - Auto illa, Spam illa - Button press panna mattum pogum!")
