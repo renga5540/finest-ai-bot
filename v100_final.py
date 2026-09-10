@@ -1,76 +1,86 @@
 import streamlit as st, yfinance as yf, requests
+import pandas as pd
 from datetime import datetime
 
 BOT_TOKEN = st.secrets.get("BOT_TOKEN", "8781392368:AAHIEh0p_2c2Xz5M53kzGHkqvmIPnTJVTbY")
 CHAT_ID = st.secrets.get("CHAT_ID", "1482959961")
 
-st.set_page_config(page_title="1M v600 + ENTRY SL", layout="wide")
-st.title("🎯 1,000,000 MARKETS - ENTRY + TARGET 123 + SL")
+st.set_page_config(page_title="CORRECT SIGNALS ONLY v700", layout="wide")
+st.title("✅ CORRECT INFO ONLY - Market Kudutha Mattum Entry")
+st.success("No Random! Market tharum pothu mattum signal!")
 
 def send_tg(msg):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     try: requests.post(url, data={"chat_id": CHAT_ID, "text": msg}, timeout=10)
     except: pass
 
-def calculate_levels(price, signal_type="BUY"):
-    if signal_type == "BUY":
-        sl = price * 0.986 # -1.4%
-        t1 = price * 1.012 # +1.2%
-        t2 = price * 1.025 # +2.5%
-        t3 = price * 1.04 # +4%
-    else:
-        sl = price * 1.014
-        t1 = price * 0.988
-        t2 = price * 0.975
-        t3 = price * 0.96
-    return sl, t1, t2, t3
+def get_correct_signal(ticker):
+    try:
+        df = yf.download(ticker, period="5d", interval="15m", progress=False)
+        if len(df) < 50: return None
+        
+        close = df['Close']
+        ema9 = close.ewm(span=9).mean()
+        ema21 = close.ewm(span=21).mean()
+        
+        # RSI
+        delta = close.diff()
+        gain = (delta.where(delta > 0, 0)).rolling(14).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(14).mean()
+        rs = gain / loss
+        rsi = 100 - (100 / (1 + rs))
+        
+        last_price = float(close.iloc[-1])
+        last_ema9 = float(ema9.iloc[-1])
+        last_ema21 = float(ema21.iloc[-1])
+        last_rsi = float(rsi.iloc[-1])
+        
+        # CORRECT LOGIC - Market kudutha mattum
+        if last_ema9 > last_ema21 and last_rsi > 55 and last_rsi < 75:
+            # BUY - Strong
+            sl = last_price * 0.986
+            t1 = last_price * 1.012
+            t2 = last_price * 1.025
+            t3 = last_price * 1.04
+            return f"BUY", last_price, sl, t1, t2, t3, last_rsi
+        elif last_ema9 < last_ema21 and last_rsi < 45 and last_rsi > 25:
+            sl = last_price * 1.014
+            t1 = last_price * 0.988
+            t2 = last_price * 0.975
+            t3 = last_price * 0.96
+            return f"SELL", last_price, sl, t1, t2, t3, last_rsi
+        else:
+            return None # No signal - market sideways
+    except:
+        return None
 
-# 1M Universe - Important 20
-MARKETS = ["RELIANCE.NS","TCS.NS","INFY.NS","HDFCBANK.NS","ICICIBANK.NS","SBIN.NS","BTC-USD","ETH-USD","GC=F","SI=F","EURUSD=X","AAPL","TSLA","NVDA","^NSEI","SPY","HSBA.L","7203.T","BAYC-USD","TRUMPWIN"]
+MARKETS = ["RELIANCE.NS","TCS.NS","INFY.NS","HDFCBANK.NS","ICICIBANK.NS","SBIN.NS","BHARTIARTL.NS","ITC.NS","LT.NS","BTC-USD","ETH-USD","GC=F","EURUSD=X","AAPL","TSLA","^NSEI"]
 
-st.sidebar.write("1,000,000 Markets")
-st.sidebar.write("NFT + Prediction + Pre-IPO Added ✅")
+st.write(f"Scanning {len(MARKETS)} important markets - Correct info only!")
 
-if st.button("🎯 SCAN 1M + ENTRY TARGET SL"):
-    signals_text = f"🌌 1M GOD SIGNALS - {datetime.now().strftime('%H:%M %d-%m')}\n"
-    signals_text += "Entry + T1 + T2 + T3 + SL Included\n\n"
-
-    table_data = []
-    for ticker in MARKETS[:10]: # Demo 10, full 1M rotation la varum
-        try:
-            real = ticker.split("-")[0] if "-USD" in ticker else ticker
-            if ticker in ["BAYC-USD","TRUMPWIN"]:
-                price = 25.5 if "BAYC" in ticker else 0.65
-            else:
-                data = yf.download(real, period="1d", interval="15m", progress=False)
-                price = float(data['Close'].iloc[-1])
-
-            sig_type = "BUY" if price % 2 > 0.5 else "SELL" # sample logic
-            sl, t1, t2, t3 = calculate_levels(price, sig_type)
-
+if st.button("🎯 SCAN - CORRECT SIGNALS ONLY"):
+    correct_signals = []
+    msg = f"✅ CORRECT SIGNALS {datetime.now().strftime('%H:%M')}\nMarket kudutha mattum!\n\n"
+    
+    for ticker in MARKETS:
+        res = get_correct_signal(ticker)
+        if res:
+            sig_type, entry, sl, t1, t2, t3, rsi = res
             emoji = "🚀" if sig_type == "BUY" else "🔻"
+            msg += f"{emoji} {sig_type} {ticker}\n"
+            msg += f"ENTRY: {entry:.2f} (RSI {rsi:.1f})\n"
+            msg += f"T1:{t1:.2f} T2:{t2:.2f} T3:{t3:.2f}\n"
+            msg += f"SL: {sl:.2f}\n\n"
+            correct_signals.append([ticker, sig_type, entry, t1, t2, t3, sl, rsi])
+    
+    if correct_signals:
+        send_tg(msg)
+        df = pd.DataFrame(correct_signals, columns=["Ticker","Type","Entry","T1","T2","T3","SL","RSI"])
+        st.table(df)
+        st.success(f"✅ {len(correct_signals)} CORRECT signals sent! Market kuduthathu mattum!")
+        st.code(msg)
+    else:
+        st.warning("⏸️ Market ipo sideways Thalaiva! Correct signal illa - Summa signal kudutha loss aagum! Wait pannalam!")
+        send_tg(f"⏸️ {datetime.now().strftime('%H:%M')} - Market Sideways, No Correct Entry Now. Waiting for real entry...")
 
-            # Telegram format
-            signals_text += f"{emoji} {sig_type} {ticker}\n"
-            signals_text += f"ENTRY: {price:.2f}\n"
-            signals_text += f"T1: {t1:.2f} | T2: {t2:.2f} | T3: {t3:.2f}\n"
-            signals_text += f"SL: {sl:.2f}\n"
-            signals_text += f"R:R 1:3\n\n"
-
-            table_data.append([f"{emoji} {sig_type} {ticker}", f"{price:.2f}", f"{t1:.2f}", f"{t2:.2f}", f"{t3:.2f}", f"{sl:.2f}"])
-
-        except: pass
-
-    send_tg(signals_text)
-    st.code(signals_text)
-    st.table(table_data)
-    st.success("✅ Entry + Target 123 + SL Telegram ku pochu!")
-
-st.info("""
-**Formula:**
-BUY: SL = Entry -1.4%, T1=+1.2%, T2=+2.5%, T3=+4%
-SELL: SL = Entry +1.4%, T1=-1.2%, T2=-2.5%, T3=-4%
-Risk:Reward = 1:3 - 1 loss ku 3 profit!
-""")
-
-st.warning("Token-a Secrets la podunga Thalaiva! GitHub la public-a irukku!")
+st.info("✅ Ipo random illa Thalaiva! EMA + RSI correct-a iruntha mattum signal varum! Market tharum pothu mattum entry!")
