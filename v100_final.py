@@ -151,3 +151,11 @@ Risk:Reward = 1:3 - 1 loss ku 3 profit!
 """)
 
 st.warning("Token-a Secrets la podunga Thalaiva! GitHub la public-a irukku!")
+
+15 min ku: 500 market scan
+1 mani ku: 2000 market scan  
+1 naal ku: 20,000 market scan
+1 vaaram ku: 1,000,000 market full scan!
+
+Important 20 (Reliance, BTC, Gold, Nifty) -> 15 min ku oru thadava check!
+Normal market -> Daily oru thadava check!
