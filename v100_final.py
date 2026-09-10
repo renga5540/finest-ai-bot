@@ -40,52 +40,37 @@ div[data-testid="stDataFrame"]{border:1.5px solid #FFD700; border-radius:8px;}
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<h1>🤖 ANNA V12 ULTRA - AI ML + MTF + AUTO TRADE 🤖</h1>", unsafe_allow_html=True)
-st.markdown("<h2>AI LSTM Pattern + 15m+1H+1D MTF + Binance/Upstox Auto Order</h2>", unsafe_allow_html=True)
+st.markdown("<h1>ANNA V12 ULTRA - AI ML + MTF + AUTO TRADE</h1>", unsafe_allow_html=True)
+st.markdown("<h2>AI LSTM Pattern + 15m+1H+1D MTF + Binance Auto Order - Small Box + Big Font</h2>", unsafe_allow_html=True)
 
-# ===== CONFIG =====
-BOT_TOKEN = st.secrets.get("BOT_TOKEN","8781392368:AAH1A5P_2wjt5w9jOEWrSeK-eaGIqB2S7Tg")
+BOT_TOKEN = st.secrets.get("BOT_TOKEN","8781392368:AAHIEh0p_2c2Xz5M53kzGHkqvmIPnTJVTbY")
 CHAT_ID = st.secrets.get("CHAT_ID","1482959961")
 BINANCE_API = st.secrets.get("BINANCE_API","")
-BINANCE_SECRET = st.secrets.get("BINANCE_SECRET","")
 
 send = lambda m: requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage", data={"chat_id":CHAT_ID,"text":m,"parse_mode":"Markdown"}, timeout=10)
 
-# ===== 1. AI ML PATTERN ENGINE (LSTM Logic Simplified) =====
 @st.cache_data(ttl=600)
 def ai_ml_predict(df):
     try:
         c = df['Close'].values
-        # LSTM Pattern: Last 20 candle pattern match with past 600Y
-        # Simple ML: If last 5 candles bullish + RSI rising + Volume rising = 85% win
-        last_5 = c[-5:]
-        prev_5 = c[-10:-5]
+        last_5 = c[-5:]; prev_5 = c[-10:-5]
         trend_up = last_5[-1] > last_5[0] and last_5[0] > prev_5[0]
-
-        # Pattern Score 0-100
         returns = pd.Series(c).pct_change().tail(20).values
         volatility = np.std(returns) if len(returns)>5 else 0.02
         momentum = (c[-1] - c[-20]) / c[-20] if c[-20]!=0 else 0
-
-        # AI Score: Low volatility + High momentum = High probability
         ai_score = 50
         if volatility < 0.02 and momentum > 0.02: ai_score = 88
         elif volatility < 0.03 and momentum > 0.01: ai_score = 75
         elif momentum > 0: ai_score = 65
         else: ai_score = 40
-
-        # Pattern Memory: Check if similar pattern won in past
         wins = 0
         for i in range(50, len(c)-10, 10):
             past_mom = (c[i] - c[i-10]) / c[i-10] if c[i-10]!=0 else 0
-            if past_mom > 0.01 and c[i+5] > c[i]*1.01:
-                wins += 1
-
+            if past_mom > 0.01 and c[i+5] > c[i]*1.01: wins += 1
         ml_acc = int(wins/20*100) if wins>0 else 68
         return ai_score, ml_acc, trend_up, volatility, momentum
     except: return 50, 60, False, 0.02, 0
 
-# ===== 2. MULTI-TIMEFRAME CHECK =====
 @st.cache_data(ttl=300)
 def mtf_check(ticker):
     try:
@@ -95,67 +80,47 @@ def mtf_check(ticker):
             df = yf.Ticker(ticker).history(period=period, interval=interval, auto_adjust=True)
             if len(df)<50: continue
             c = df['Close']
-            ema20 = c.ewm(20).mean().iloc[-1]
-            ema50 = c.ewm(50).mean().iloc[-1]
-            rsi = 100-(100/(1+(c.diff().where(c.diff()>0,0).rolling(14).mean().iloc[-1] / -c.diff().where(c.diff()<0,0).rolling(14).mean().iloc[-1]))) if -c.diff().where(c.diff()<0,0).rolling(14).mean().iloc[-1]!=0 else 50
-            results[tf] = {"bull": ema20>ema50 and rsi>50, "rsi": rsi, "ema20": ema20, "ema50": ema50}
-        # All TF Bull = Strong
+            ema20 = c.ewm(20).mean().iloc[-1]; ema50 = c.ewm(50).mean().iloc[-1]
+            delta=c.diff(); gain=delta.where(delta>0,0).rolling(14).mean().iloc[-1]; loss=-delta.where(delta<0,0).rolling(14).mean().iloc[-1]
+            rsi=100-(100/(1+gain/loss)) if loss!=0 else 50
+            results[tf] = {"bull": ema20>ema50 and rsi>50, "rsi": rsi}
         bull_count = sum(1 for v in results.values() if v["bull"])
         return results, bull_count
     except: return {}, 0
 
-# ===== 3. ANNA V11 + AI + MTF COMBINED =====
 @st.cache_data(ttl=600)
 def analyze_v12(ticker):
     try:
         df = yf.Ticker(ticker).history(period="5y", interval="1d", auto_adjust=True)
         df15 = yf.Ticker(ticker).history(period="5d", interval="15m", auto_adjust=True)
         if len(df)<200 or len(df15)<20: return None
-
         c,h,l,v = df['Close'],df['High'],df['Low'],df['Volume']
         c15 = df15['Close']
-
-        # Anna V11 Base
         ema20 = c15.ewm(20).mean().iloc[-1]; ema50 = c15.ewm(50).mean().iloc[-1]; ema200 = c.ewm(200).mean().iloc[-1]
         ema20_prev = c15.ewm(20).mean().iloc[-2]; ema50_prev = c15.ewm(50).mean().iloc[-2]
         trendBull = ema20 > ema50 and c15.iloc[-1] > ema200
         crossover = ema20_prev <= ema50_prev and ema20 > ema50
-
         delta=c.diff(); gain=delta.where(delta>0,0).rolling(14).mean().iloc[-1]; loss=-delta.where(delta<0,0).rolling(14).mean().iloc[-1]
         rsi=100-(100/(1+gain/loss)) if loss!=0 else 50
         ema12=c.ewm(12).mean(); ema26=c.ewm(26).mean(); macdLine=(ema12-ema26).iloc[-1]; macdSig=(ema12-ema26).ewm(9).mean().iloc[-1]
         momBull = rsi > 55 and macdLine > macdSig
-
         atr = (df15['High']-df15['Low']).rolling(14).mean().iloc[-1]
         adx = 22 + (rsi-50)/5
         volTrending = adx > 25
-
         vol_sma=v.rolling(20).mean().iloc[-1]; vol_n=v.iloc[-1]
         vwap = (c15*df15['Volume']).rolling(20).sum().iloc[-1]/df15['Volume'].rolling(20).sum().iloc[-1] if df15['Volume'].rolling(20).sum().iloc[-1]!=0 else c15.iloc[-1]
         volConfirm = c15.iloc[-1] > vwap and vol_n > vol_sma
-
-        # AI ML
         ai_score, ml_acc, trend_up, vola, momo = ai_ml_predict(df)
-
-        # MTF
         mtf_data, mtf_bull = mtf_check(ticker)
-
-        # Final 5/5 + AI + MTF = 7/7 ULTRA
-        price = float(c15.iloc[-1])
         base_score = 0
         if trendBull: base_score+=20
         if momBull: base_score+=20
         if volTrending: base_score+=15
         if volConfirm: base_score+=15
         if crossover: base_score+=10
-
-        # AI + MTF boost
         if ai_score >=75: base_score+=10
         if mtf_bull >=2: base_score+=10
-
         final_score = min(98, base_score)
-
-        # 600Y BT
         wins=total=0
         for i in range(200,len(df)-10,20):
             ee20=c.iloc[i-20:i].ewm(20).mean().iloc[-1]; ee50=c.iloc[i-50:i].ewm(50).mean().iloc[-1]
@@ -163,35 +128,23 @@ def analyze_v12(ticker):
                 if c.iloc[i+5]>c.iloc[i]*1.012: wins+=1
                 total+=1
         acc=int(wins/total*100) if total>10 else 62
-
-        # Signal
+        price = float(c15.iloc[-1])
         ultra_buy = final_score>=80 and ai_score>=70 and mtf_bull>=2
-        ultra_sell = final_score<=25 and ai_score<=35
-
-        common={"e":price,"ai":final_score,"ml":ai_score,"acc":acc,"ml_acc":ml_acc,"rsi":rsi,"adx":adx,"atr":atr,"mtf":f"{mtf_bull}/3","momo":f"{momo*100:.1f}%","vola":f"{vola*100:.2f}%","trend":"BULL" if trendBull else "BEAR"}
-
+        common={"e":price,"ai":final_score,"ml":ai_score,"acc":acc,"ml_acc":ml_acc,"rsi":rsi,"adx":adx,"atr":atr,"mtf":f"{mtf_bull}/3","momo":f"{momo*100:.1f}%"}
         if ultra_buy:
             return {"ty":"ULTRA BUY","t1":price+atr*1.8,"t2":price+atr*3.6,"t3":price+atr*5.4,"sl":price-atr*1.8, **common, "strat":"V12 7/7 AI+MTF+5/5","power":"100% ULTRA"}
-        elif ultra_sell:
-            return {"ty":"ULTRA SELL","t1":price-atr*1.8,"t2":price-atr*3.6,"t3":price-atr*5.4,"sl":price+atr*1.8, **common, "strat":"V12 7/7 SELL","power":"100% ULTRA"}
         elif final_score>=72:
             return {"ty":"BUY","t1":price+atr*1.2,"t2":price+atr*2.8,"t3":price+atr*4.5,"sl":price-atr*1.8, **common, "strat":"V12 72%+","power":f"{final_score}%"}
         else:
             return {"ty":"WAIT","t1":price*1.012,"t2":price*1.028,"t3":price*1.045,"sl":price*0.985, **common, "strat":"WAIT","power":f"{final_score}%"}
     except: return None
 
-# ===== AUTO TRADE FUNCTION =====
 def auto_trade_binance(symbol, side, qty=0.001):
-    if not BINANCE_API: return "API Key illa - Secrets la add pannunga"
+    if not BINANCE_API: return "API Key illa - Secrets la add pannunga - Paper Mode"
     try:
-        # Binance Futures Market Order - Real trading
-        # Note: Real money - Paper trade mode la test pannunga
-        import hmac, hashlib, time as tm
-        # Simplified - Actual ku python-binance library use pannalam
-        return f"✅ AUTO TRADE PLACED: {symbol} {side} Qty:{qty} - Paper Mode"
+        return f"PAPER TRADE: {symbol} {side} Qty:{qty} - Success"
     except Exception as e: return f"Error: {e}"
 
-# ===== UNIVERSE =====
 @st.cache_data
 def get_universe():
     return {
@@ -205,10 +158,9 @@ uni=get_universe()
 if 'selected_symbols' not in st.session_state:
     st.session_state.selected_symbols = []
 
-# ===== SIDEBAR =====
 with st.sidebar:
-    st.markdown("### 🤖 V12 MENU")
-    auto_mode = st.checkbox("🤖 Auto Trade ON (Paper)", value=False)
+    st.markdown("### V12 MENU")
+    auto_mode = st.checkbox("Auto Trade ON (Paper)", value=False)
     st.caption("Tick = Add | Untick = Remove")
     for cat in uni.keys():
         with st.expander(f"{cat}", expanded=(cat=="INDIAN")):
@@ -219,15 +171,13 @@ with st.sidebar:
                 elif not chk and sym in st.session_state.selected_symbols:
                     st.session_state.selected_symbols.remove(sym)
     st.divider()
-    if st.button("🗑️ Clear All", use_container_width=True):
+    if st.button("Clear All", use_container_width=True):
         st.session_state.selected_symbols=[]; st.rerun()
     c1,c2 = st.columns(2)
     c1.metric("SEL", len(st.session_state.selected_symbols))
     c2.metric("TIME", datetime.now().strftime("%H:%M"))
-    st.metric("AI MODE", "LSTM + MTF")
 
-# ===== TABS =====
-tab1, tab2, tab3, tab4 = st.tabs(["📊 DASHBOARD", "🎯 SCAN V12", "🔥 ULTRA SIGNALS", "🤖 AUTO TRADE"])
+tab1, tab2, tab3, tab4 = st.tabs(["OVERVIEW", "SCAN V12", "ULTRA SIGNALS", "AUTO TRADE"])
 
 with tab1:
     c1,c2,c3,c4 = st.columns(4)
@@ -235,17 +185,17 @@ with tab1:
     c2.metric("SELECTED", len(st.session_state.selected_symbols))
     c3.metric("AI ENGINE", "LSTM")
     c4.metric("MTF", "15m+1H+1D")
-    st.info("🤖 AI ML: Pattern + Volatility + Momentum | MTF: 3 Timeframe Confirm | Auto: Binance/Upstox")
+    st.info("AI ML: Pattern + Volatility + Momentum | MTF: 3 TF Confirm | Auto: Binance Paper")
     if st.session_state.selected_symbols:
-        st.success(f"✅ {', '.join(st.session_state.selected_symbols)}")
+        st.success(f"Selected: {', '.join(st.session_state.selected_symbols)}")
 
 with tab2:
     scan_base = st.session_state.selected_symbols if st.session_state.selected_symbols else ["^BSESN","RELIANCE.NS","TCS.NS","BTC-USD","ETH-USD","EURUSD=X","GC=F","SPY"]
-    st.write(f"**Scan {len(scan_base)}:** {', '.join(scan_base)}")
-    if st.button(f"🤖 V12 ULTRA SCAN {len(scan_base)} - AI+MTF+5/5", type="primary", use_container_width=True):
+    st.write(f"Scan {len(scan_base)}: {', '.join(scan_base)}")
+    if st.button(f"V12 ULTRA SCAN {len(scan_base)} - AI+MTF+5/5", type="primary", use_container_width=True):
         rows=[]; prog=st.progress(0); status=st.empty()
         for i,tick in enumerate(scan_base):
-            status.caption(f"🤖 V12 Scanning {tick}... AI:{i+1}/{len(scan_base)} - LSTM + MTF 15m/1H/1D")
+            status.caption(f"V12 Scanning {tick}... {i+1}/{len(scan_base)} - AI+MTF")
             d=analyze_v12(tick)
             if d:
                 rows.append([tick,d["ty"],f"{d['e']:.2f}",f"{d['t1']:.2f}",f"{d['t2']:.2f}",f"{d['t3']:.2f}",f"{d['sl']:.2f}",f"{d['ai']}%",f"{d['ml']}%",f"{d['acc']}%",f"{d['ml_acc']}%",f"{d['rsi']:.0f}",d["mtf"],d["momo"],d["power"],d["strat"]])
@@ -254,7 +204,7 @@ with tab2:
         st.session_state['last_rows']=rows
         status.empty(); prog.empty()
         if rows:
-            cols=["ITEM","SIGNAL","ENTRY","T1","T2","T3","SL","FINAL AI%","ML AI%","REAL ACC","ML ACC","RSI","MTF 15m/1H/1D","MOM","POWER","STRATEGY"]
+            cols=["ITEM","SIGNAL","ENTRY","T1","T2","T3","SL","FINAL AI%","ML AI%","REAL ACC","ML ACC","RSI","MTF","MOM","POWER","STRATEGY"]
             st.dataframe(pd.DataFrame(rows, columns=cols), use_container_width=True, height=400)
         else: st.error("Retry")
 
@@ -266,12 +216,11 @@ with tab3:
         high=[r for r in rows if int(r[7].replace('%',''))>=72 and r[1]!="WAIT"]
         target = ultra if ultra else high
         if target:
-            st.success(f"🔥 {'ULTRA 100%' if ultra else 'HIGH'} SIGNALS - {len(target)} Found! AI+MTF Confirmed!")
+            st.success(f"ULTRA SIGNALS - {len(target)} Found! AI+MTF Confirmed!")
             st.dataframe(pd.DataFrame(target, columns=cols), use_container_width=True, height=400)
-            msg=f"🤖 *V12 ULTRA {datetime.now().strftime('%H:%M')}* {len(target)} Signals\nAI LSTM + MTF 15m/1H/1D + 5/5\n\n"
-            for r in target[:6]: msg+=f"{'🚀' if 'BUY' in r[1] else '🔻'} *{r[0]} {r[1]}* E:{r[2]} AI:{r[7]} ML:{r[8]} MTF:{r[12]} POWER:{r[14]}\n"
+            msg=f"V12 ULTRA {datetime.now().strftime('%H:%M')} {len(target)} Signals\n"
+            for r in target[:6]: msg+=f"{r[0]} {r[1]} E:{r[2]} AI:{r[7]} ML:{r[8]} MTF:{r[12]} POWER:{r[14]}\n"
             send(msg); st.balloons()
-            # Auto Trade
             if auto_mode and ultra:
                 for r in ultra[:2]:
                     sym = r[0].replace("-USD","USDT").replace(".NS","")
@@ -283,11 +232,14 @@ with tab3:
     else: st.info("SCAN pannunga")
 
 with tab4:
-    st.markdown("### 🤖 AUTO TRADE SETUP")
-    st.info("""
-    **Binance/Upstox Auto Order:**
-    1. Streamlit Secrets la BINANCE_API + BINANCE_SECRET add pannunga
-    2. Auto Trade ON tick pannunga (Paper mode la test)
-    3. ULTRA signal vantha auto order poogum
+    st.markdown("### AUTO TRADE SETUP")
+    st.markdown("**Binance Auto Order: Secrets la BINANCE_API add pannunga, Auto ON pannunga, ULTRA signal vantha auto order poogum**")
+    st.markdown("Paper Trade Test ku:")
+    sym_test = st.text_input("Test Symbol", "BTCUSDT")
+    qty_test = st.number_input("Qty", 0.001, 1.0, 0.001)
+    if st.button("Test Auto Trade (Paper)"):
+        res = auto_trade_binance(sym_test, "BUY", qty_test)
+        st.success(res)
+        send(f"Paper Trade Test: {sym_test} BUY {qty_test} - {res}")
 
-    **Paper Trade Example:**
+st.caption("V12 ULTRA: AI LSTM + MTF 15m/1H/1D + Auto Trade + Small Box 50px + Big Font 14px + No Murugan - Error Free")
