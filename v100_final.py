@@ -275,4 +275,3 @@ with tab3:
     else:
         st.info("👈 SCAN tab la poyi SCAN pannunga")
 
-st.caption("✅ Code1 Advanced BG + Neon + 25 IND + Code2 Small Box 50px + Big Font 14px + No Murugan + Compact 3-in-1 + Full Universe")
