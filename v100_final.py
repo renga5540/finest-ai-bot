@@ -159,3 +159,11 @@ st.warning("Token-a Secrets la podunga Thalaiva! GitHub la public-a irukku!")
 
 Important 20 (Reliance, BTC, Gold, Nifty) -> 15 min ku oru thadava check!
 Normal market -> Daily oru thadava check!
+
+Signal eppothu varum?
+✅ EMA 9 > EMA 21 + RSI 55+ + Volume High = BUY (Market sonnathu!)
+✅ EMA 9 < EMA 21 + RSI 45- = SELL (Market sonnathu!)
+
+Signal eppothu varathu?
+❌ Sideways market = No Signal (Summa kuduthu loss aaka koodathu!)
+❌ Low volume = No Signal
