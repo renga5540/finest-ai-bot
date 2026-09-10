@@ -5,6 +5,13 @@ import time
 st.set_page_config(page_title="FINAL LIVE", layout="wide")
 st.title("📊 ITEM WISE - ENTRY T1 T2 T3 SL + AI% + ACC")
 
+# CLEAR CACHE BUTTON - App kulla
+if st.button("🗑️ CLEAR CACHE (Reboot pola)"):
+    st.cache_data.clear()
+    st.success("✅ Cache cleared! Ippo SCAN pannunga!")
+    time.sleep(1)
+    st.rerun()
+
 BOT_TOKEN = st.secrets.get("BOT_TOKEN","8781392368:AAHIEh0p_2c2Xz5M53kzGHkqvmIPnTJVTbY")
 CHAT_ID = st.secrets.get("CHAT_ID","1482959961")
 send = lambda m: requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage", data={"chat_id":CHAT_ID,"text":m}, timeout=10)
@@ -23,7 +30,6 @@ def analyze(t):
         if e21>e50: score+=25
         if 55<rsi<70: score+=25
         if vol_last>vol_avg: score+=25
-        # Real backtest
         wins=total=0
         for i in range(30,len(df)-10):
             if c.iloc[i-9:i].ewm(9).mean().iloc[-1] > c.iloc[i-21:i].ewm(21).mean().iloc[-1]:
@@ -62,6 +68,6 @@ if st.button("🎯 SCAN 10K ITEM WISE TABLE", type="primary"):
         else:
             st.warning("⏸️ Table vanthiduchu! High AI 75%+ illa - WAIT. Market kudutha varum!")
     else:
-        st.error("Cache clear pannunga: Manage app -> Clear cache")
+        st.error("Data load aagala - Mel irukkira CLEAR CACHE button click pannunga")
 
-st.info("ITEM | ENTRY | T1 T2 T3 | SL | AI% (15 IND) | REAL ACC | 600Y ACC | RSI - All in one table")
+st.info("ITEM | ENTRY | T1 T2 T3 | SL | AI% | REAL ACC | 600Y ACC | RSI")
